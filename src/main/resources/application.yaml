@@ -1,0 +1,49 @@
+# 应用服务 WEB 访问端口
+server:
+  servlet:
+    context-path: /
+
+spring:
+  jackson:
+    time-zone: GMT+8
+  application:
+  name: badminton-tool
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+  profiles:
+    active: dev
+
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  # 实体扫描，多个package用逗号或者分号分隔
+  typeAliasesPackage: cn.badminton.tool.web.entity,cn.badminton.tool.web.vo
+  global-config:
+    # 数据库相关配置
+    db-config:
+      # ID自增
+      id-type: AUTO
+      # 逻辑已删除值
+      logic-delete-value: 1
+      # 逻辑未删除值
+      logic-not-delete-value: 0
+    banner: false
+  # 原生配置
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+    call-setters-on-nulls: true
+    jdbc-type-for-null: 'null'
+  configuration-properties:
+    prefix:
+    blobType: BLOB
+    boolValue: TRUE
+
+wx:
+  jscode2session_url: https://api.weixin.qq.com/sns/jscode2session
+  appid: wx736f2ce46f1621e5
+  secret: dabb7967dff80251c7057dc278a64b5f
+  grant_type: authorization_code
+

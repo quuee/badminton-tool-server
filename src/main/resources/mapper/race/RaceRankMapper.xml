@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.badminton.tool.web.dao.RaceRankMapper">
+
+    <resultMap id="rankMap" type="cn.badminton.tool.web.vo.RaceRankVO">
+        <id column="rid" property="rid" />
+        <result column="race_id" property="raceId"/>
+        <result column="victories" property="victories"/>
+        <result column="failures" property="failures"/>
+        <result column="odds" property="odds"/>
+        <result column="odds_difference" property="oddsDifference"/>
+
+        <association property="player"
+                     javaType="cn.badminton.tool.web.entity.WXUserEntity"
+                     autoMapping="true"
+                     column="uid"
+                     select="cn.badminton.tool.web.dao.WXUserMapper.selectWxUserByUid">
+
+            <id column="uid" property="uid"/>
+            <result column="openid" property="openid"/>
+            <result column="nick_name" property="nickName"/>
+            <result column="gender" property="gender"/>
+            <result column="avatar_url" property="avatarUrl"/>
+            <result column="register_date" property="registerDate"/>
+            <result column="last_login_date" property="lastLoginDate"/>
+            <result column="level" property="level"/>
+        </association>
+
+    </resultMap>
+
+    <select id="selectByRaceId" resultMap="rankMap">
+
+        SELECT
+            trr.`rid` ,
+            trr.race_id ,
+            trr.uid ,
+            trr.victories ,
+            trr.failures ,
+            trr.odds ,
+            trr.odds_difference
+        from tb_race_rank trr
+            where trr.race_id = #{raceId}
+        order by trr.odds ,trr.odds_difference desc
+    </select>
+
+
+
+</mapper>

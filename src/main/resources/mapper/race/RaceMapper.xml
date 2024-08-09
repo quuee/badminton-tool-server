@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.badminton.tool.web.dao.RaceMainMapper">
+
+    <resultMap id="raceMap" type="cn.badminton.tool.web.vo.RaceVO">
+        <id column="race_id" property="raceId" />
+        <result column="race_title" property="raceTitle"/>
+        <result column="race_state" property="raceState"/>
+        <result column="race_date_time" property="raceDateTime"/>
+        <result column="race_main_type" property="raceMainType"/>
+        <result column="scheme_id" property="schemeId"/>
+        <result column="raceBOX" property="raceBOX"/>
+        <result column="race_score_mode" property="raceScoreMode"/>
+        <result column="organizer_uid" property="organizerUid"/>
+        <result column="predict_apply_num" property="predictApplyNum"/>
+        <result column="gender_limit" property="genderLimit"/>
+        <result column="field_num" property="fieldNum"/>
+        <result column="address" property="address"/>
+        <result column="add_context" property="addContext"/>
+        <result column="default_referee" property="defaultReferee"/>
+        <result column="create_time" property="createTime"/>
+        <result column="battle_generate_algorithm" property="battleGenerateAlgorithm"/>
+
+        <!-- 实现不了就作嵌套查询 -->
+        <association property="raceScheme"
+                     javaType="cn.badminton.tool.web.entity.RaceSchemeEntity"
+                     autoMapping="true"
+                     column="scheme_id"
+                     select="cn.badminton.tool.web.dao.RaceSchemeMapper.selectRaceFormatById">
+
+            <id column="scheme_id" property="schemeId"/>
+            <result column="race_scheme" property="raceScheme"/>
+            <result column="simple_desc" property="simpleDesc"/>
+            <result column="detail_desc" property="detailDesc"/>
+            <result column="generate_class_name" property="generateClassName"/>
+            <result column="min_players" property="minPlayers"/>
+            <result column="per_session_num" property="perSessionNum"/>
+
+        </association>
+        <association property="organizer"
+                     javaType="cn.badminton.tool.web.entity.WXUserEntity"
+                     autoMapping="true"
+                     column="organizer_uid"
+                     select="cn.badminton.tool.web.dao.WXUserMapper.selectWxUserByUid">
+
+            <id column="organizer_uid" property="uid"/>
+            <result column="openid" property="openid"/>
+            <result column="nick_name" property="nickName"/>
+            <result column="gender" property="gender"/>
+            <result column="avatar_url" property="avatarUrl"/>
+            <result column="register_date" property="registerDate"/>
+            <result column="last_login_date" property="lastLoginDate"/>
+            <result column="level" property="level"/>
+        </association>
+        <collection property="applicants"
+                    javaType="java.util.ArrayList"
+                    ofType="cn.badminton.tool.web.entity.WXUserEntity"
+                    autoMapping="true"
+                    column="race_id"
+                    select="cn.badminton.tool.web.dao.RaceApplicantMapper.selectByRaceId">
+
+            <id column="uid" property="uid" />
+            <result column="openid" property="openid"/>
+            <result column="nick_name" property="nickName"/>
+            <result column="gender" property="gender"/>
+            <result column="avatar_url" property="avatarUrl"/>
+            <result column="register_date" property="registerDate"/>
+            <result column="last_login_date" property="lastLoginDate"/>
+            <result column="level" property="level"/>
+
+        </collection>
+    </resultMap>
+
+    <select id="selectRaceByUid" resultMap="raceMap">
+        SELECT
+            DISTINCT
+            trm.race_id,
+            trm.race_title,
+            trm.race_state,
+            trm.race_date_time ,
+            trm.race_main_type ,
+            trm.scheme_id ,
+            trm.raceBOX ,
+            trm.race_score_mode ,
+            trm.organizer_uid ,
+            trm.predict_apply_num ,
+            trm.every_play_times ,
+            trm.gender_limit ,
+            trm.field_num ,
+            trm.`address` ,
+            trm.add_context ,
+            trm.default_referee,
+            trm.create_time ,
+            trm.battle_generate_algorithm
+        from
+            tb_race_main trm
+        left join tb_wx_user twu on
+            twu.uid = trm.organizer_uid
+        left join (
+            SELECT
+                tra.apply_id ,
+                tra.race_id,
+                twu.uid,
+                twu.openid ,
+                twu.nick_name ,
+                twu.avatar_url ,
+                twu.register_date ,
+                twu.last_login_date,
+                twu.`level`
+            FROM
+                tb_race_applicant tra
+            left join tb_wx_user twu on twu.uid = tra.uid ) traa
+            on traa.race_id = trm.race_id
+        where
+        (trm.organizer_uid = #{uid} or traa.uid = #{uid}) and (trm.race_date_time BETWEEN #{tenDaysAgo} and #{today})
+        order by unix_timestamp(trm.race_date_time) desc
+    </select>
+
+    <select id="selectRaceById" resultMap="raceMap">
+        SELECT
+            DISTINCT
+            trm.race_id,
+            trm.race_title,
+            trm.race_state,
+            trm.race_date_time ,
+            trm.race_main_type ,
+            trm.scheme_id ,
+            trm.raceBOX ,
+            trm.race_score_mode ,
+            trm.organizer_uid ,
+            trm.predict_apply_num ,
+            trm.every_play_times ,
+            trm.gender_limit ,
+            trm.field_num ,
+            trm.`address` ,
+            trm.add_context ,
+            trm.default_referee ,
+            trm.create_time
+        from
+            tb_race_main trm  left join tb_wx_user twu on twu.uid = trm.organizer_uid
+        left join (
+            SELECT
+            tra.apply_id ,
+            tra.race_id,
+            twu.uid,
+            twu.openid ,
+            twu.nick_name ,
+            twu.avatar_url ,
+            twu.register_date ,
+            twu.last_login_date
+        FROM
+            tb_race_applicant tra left join tb_wx_user twu on twu.uid = tra.uid ) traa on traa.race_id = trm.race_id
+        where
+        trm.race_id = #{raceId}
+        order by unix_timestamp(trm.race_date_time) desc
+    </select>
+
+
+
+</mapper>

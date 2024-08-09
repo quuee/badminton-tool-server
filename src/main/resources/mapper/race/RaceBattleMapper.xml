@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.badminton.tool.web.dao.RaceBattleMapper">
+
+    <resultMap id="battleMap" type="cn.badminton.tool.web.vo.RaceBattleVO">
+        <id column="bid" property="bid" />
+        <result column="race_id" property="raceId"/>
+        <result column="round_num" property="roundNum"/>
+        <result column="race_main_type" property="raceMainType"/>
+        <result column="first_partner_score" property="firstPartnerScore"/>
+        <result column="second_partner_score" property="secondPartnerScore"/>
+        <result column="battle_state" property="battleState"/>
+        <association property="player1"
+                     javaType="cn.badminton.tool.web.entity.WXUserEntity"
+                     autoMapping="true"
+                     column="player_uid1"
+                     select="cn.badminton.tool.web.dao.WXUserMapper.selectWxUserByUid">
+
+            <id column="player_uid1" property="uid"/>
+            <result column="openid" property="openid"/>
+            <result column="nick_name" property="nickName"/>
+            <result column="gender" property="gender"/>
+            <result column="avatar_url" property="avatarUrl"/>
+            <result column="register_date" property="registerDate"/>
+            <result column="last_login_date" property="lastLoginDate"/>
+            <result column="level" property="level"/>
+        </association>
+        <association property="player2"
+                     javaType="cn.badminton.tool.web.entity.WXUserEntity"
+                     autoMapping="true"
+                     column="player_uid2"
+                     select="cn.badminton.tool.web.dao.WXUserMapper.selectWxUserByUid">
+
+            <id column="player_uid2" property="uid"/>
+            <result column="openid" property="openid"/>
+            <result column="nick_name" property="nickName"/>
+            <result column="gender" property="gender"/>
+            <result column="avatar_url" property="avatarUrl"/>
+            <result column="register_date" property="registerDate"/>
+            <result column="last_login_date" property="lastLoginDate"/>
+            <result column="level" property="level"/>
+        </association>
+        <association property="player3"
+                     javaType="cn.badminton.tool.web.entity.WXUserEntity"
+                     autoMapping="true"
+                     column="player_uid3"
+                     select="cn.badminton.tool.web.dao.WXUserMapper.selectWxUserByUid">
+
+            <id column="player_uid3" property="uid"/>
+            <result column="openid" property="openid"/>
+            <result column="nick_name" property="nickName"/>
+            <result column="gender" property="gender"/>
+            <result column="avatar_url" property="avatarUrl"/>
+            <result column="register_date" property="registerDate"/>
+            <result column="last_login_date" property="lastLoginDate"/>
+            <result column="level" property="level"/>
+        </association>
+        <association property="player4"
+                     javaType="cn.badminton.tool.web.entity.WXUserEntity"
+                     autoMapping="true"
+                     column="player_uid4"
+                     select="cn.badminton.tool.web.dao.WXUserMapper.selectWxUserByUid">
+
+            <id column="player_uid4" property="uid"/>
+            <result column="openid" property="openid"/>
+            <result column="nick_name" property="nickName"/>
+            <result column="gender" property="gender"/>
+            <result column="avatar_url" property="avatarUrl"/>
+            <result column="register_date" property="registerDate"/>
+            <result column="last_login_date" property="lastLoginDate"/>
+            <result column="level" property="level"/>
+        </association>
+        <association property="referee"
+                     javaType="cn.badminton.tool.web.vo.RaceRefereeVO"
+                     autoMapping="true"
+                     column="{uid=referee_uid,race_id=race_id}"
+                     select="cn.badminton.tool.web.dao.RaceRefereeMapper.selectRefereeByUidRaceId">
+
+            <id column="referee_uid" property="uid"/>
+            <result column="openid" property="openid"/>
+            <result column="nick_name" property="nickName"/>
+            <result column="gender" property="gender"/>
+            <result column="avatar_url" property="avatarUrl"/>
+            <result column="level" property="level"/>
+            <result column="master" property="master"/>
+        </association>
+
+    </resultMap>
+
+    <select id="selectByRaceId" resultMap="battleMap">
+
+        SELECT
+            trb.`bid` ,
+            trb.race_id ,
+            trb.race_main_type ,
+            trb.round_num ,
+            trb.player_uid1 ,
+            trb.player_uid2 ,
+            trb.first_partner_score ,
+            trb.player_uid3 ,
+            trb.player_uid4 ,
+            trb.second_partner_score ,
+            trb.battle_state ,
+            trb.referee_uid
+        from tb_race_battle trb
+            where trb.race_id = #{raceId}
+    </select>
+
+    <select id="selectByPlayerId" resultMap="battleMap">
+
+        SELECT
+        trb.`bid` ,
+        trb.race_id ,
+        trb.race_main_type ,
+        trb.round_num ,
+        trb.player_uid1 ,
+        trb.player_uid2 ,
+        trb.first_partner_score ,
+        trb.player_uid3 ,
+        trb.player_uid4 ,
+        trb.second_partner_score ,
+        trb.battle_state ,
+        trb.referee_uid
+        from tb_race_battle trb
+        WHERE
+        trb.battle_state = 2
+        and (trb.player_uid1 = #{playerId}
+            OR trb.player_uid2 = #{playerId}
+            OR trb.player_uid3 = #{playerId}
+            OR trb.player_uid4 = #{playerId})
+    </select>
+
+    <select id="selectBattleStatistics" resultType="cn.badminton.tool.web.vo.BattleStatisticsVO">
+
+        SELECT
+        (SUM(CASE WHEN trb.first_partner_score > trb.second_partner_score AND (trb.player_uid1 = #{userId} OR trb.player_uid2 = #{userId}) THEN 1 ELSE 0 END) +
+        SUM(CASE WHEN trb.second_partner_score > trb.first_partner_score AND (trb.player_uid3 = #{userId} OR trb.player_uid4 = #{userId}) THEN 1 ELSE 0 END)) AS total_wins,
+        (SUM(CASE WHEN trb.first_partner_score &lt; trb.second_partner_score AND (trb.player_uid1 = #{userId} OR trb.player_uid2 = #{userId}) THEN 1 ELSE 0 END) +
+        SUM(CASE WHEN trb.second_partner_score &lt; trb.first_partner_score AND (trb.player_uid3 = #{userId} OR trb.player_uid4 = #{userId}) THEN 1 ELSE 0 END)) AS total_losses
+        FROM
+            tb_race_battle trb
+        where trb.battle_state = 2 and trb.race_main_type =#{raceMainType};
+
+    </select>
+
+</mapper>

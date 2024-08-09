@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.badminton.tool.web.dao.RaceSchemeMapper">
+
+    <resultMap id="baseMap" type="cn.badminton.tool.web.entity.RaceSchemeEntity">
+        <id column="scheme_id" property="schemeId"/>
+        <result column="race_scheme" property="raceScheme"/>
+        <result column="simple_desc" property="simpleDesc"/>
+        <result column="detail_desc" property="detailDesc"/>
+        <result column="generate_class_name" property="generateClassName"/>
+        <result column="min_players" property="minPlayers"/>
+        <result column="field_accommodate_player_num" property="fieldAccommodatePlayerNum"/>
+    </resultMap>
+
+    <select id="selectRaceFormatById" resultMap="baseMap">
+
+        SELECT
+            trf.scheme_id,
+            trf.race_scheme,
+            trf.simple_desc,
+            trf.detail_desc,
+            trf.generate_class_name,
+            trf.min_players,
+            trf.field_accommodate_player_num
+        from
+            tb_race_scheme trf
+        WHERE
+            trf.scheme_id = #{schemeId}
+    </select>
+
+
+
+</mapper>

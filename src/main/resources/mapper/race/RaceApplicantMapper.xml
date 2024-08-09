@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.badminton.tool.web.dao.RaceApplicantMapper">
+
+
+    <resultMap id="raceApplicantMap" type="cn.badminton.tool.web.entity.WXUserEntity">
+        <id column="uid" property="uid" />
+        <result column="openid" property="openid"/>
+        <result column="nick_name" property="nickName"/>
+        <result column="gender" property="gender"/>
+        <result column="avatar_url" property="avatarUrl"/>
+        <result column="register_date" property="registerDate"/>
+        <result column="last_login_date" property="lastLoginDate"/>
+        <result column="level" property="level"/>
+    </resultMap>
+
+    <select id="selectByRaceId" resultMap="raceApplicantMap">
+
+        SELECT
+            twu.uid,
+            twu.openid,
+            twu.nick_name,
+            twu.`gender`,
+            twu.avatar_url,
+            twu.register_date,
+            twu.last_login_date,
+            twu.`level`
+        from
+            tb_race_applicant tra
+        left join tb_wx_user twu on tra.uid = twu.uid
+        where
+            tra.race_id = #{raceId}
+    </select>
+
+
+
+</mapper>
