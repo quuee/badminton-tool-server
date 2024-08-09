@@ -41,9 +41,5 @@ mybatis-plus:
     blobType: BLOB
     boolValue: TRUE
 
-wx:
-  jscode2session_url: https://api.weixin.qq.com/sns/jscode2session
-  appid: wx736f2ce46f1621e5
-  secret: dabb7967dff80251c7057dc278a64b5f
-  grant_type: authorization_code
+
 
