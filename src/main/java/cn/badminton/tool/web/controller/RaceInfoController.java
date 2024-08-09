@@ -7,16 +7,10 @@ import cn.badminton.tool.web.entity.RaceApplicantEntity;
 import cn.badminton.tool.web.entity.RaceMainEntity;
 import cn.badminton.tool.web.params.*;
 import cn.badminton.tool.web.service.RaceApplicantService;
-import cn.badminton.tool.web.service.RaceBattleService;
-import cn.badminton.tool.web.service.RaceRefereeService;
 import cn.badminton.tool.web.service.RaceService;
-import cn.badminton.tool.web.vo.RaceBattleVO;
-import cn.badminton.tool.web.vo.RaceRankVO;
-import cn.badminton.tool.web.vo.RaceRefereeVO;
 import cn.badminton.tool.web.vo.RaceVO;
 import cn.badminton.tool.support.Result;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -35,11 +29,7 @@ public class RaceInfoController {
     @Autowired
     private RaceApplicantService applicantService;
 
-    @Autowired
-    private RaceRefereeService refereeService;
 
-    @Autowired
-    private RaceBattleService battleService;
 
     /**
      * 单个比赛信息
@@ -157,83 +147,9 @@ public class RaceInfoController {
         return Result.ok();
     }
 
-    /**
-     * 获取比赛对阵信息
-     * @param raceId
-     * @return
-     */
-    @RequestMapping(value = "getBattles",method = RequestMethod.GET)
-    public Result<List<RaceBattleVO>> getRaceBattles(@RequestParam("raceId")Long raceId){
-        List<RaceBattleVO> raceBattles = battleService.getRaceBattles(raceId);
-        return Result.ok(raceBattles);
-    }
 
-    /**
-     * 获取排名信息
-     * @param raceId
-     * @return
-     */
-    @RequestMapping(value = "getRanks",method = RequestMethod.GET)
-    public Result<List<RaceRankVO>> getRaceRank(@RequestParam("raceId")Long raceId){
-        List<RaceRankVO> raceRank = raceService.getRaceRanks(raceId);
-        return Result.ok(raceRank);
-    }
 
-    /**
-     * 获取本次比赛裁判信息
-     * @param raceId
-     * @return
-     */
-    @RequestMapping(value = "getReferees",method = RequestMethod.GET)
-    public Result<List<RaceRefereeVO>> getReferees(@RequestParam("raceId")Long raceId){
-        List<RaceRefereeVO> refereeVOS = refereeService.getReferees(raceId);
-        return Result.ok(refereeVOS);
-    }
 
-    /**
-     * 申请为裁判
-     * @param param
-     * @return
-     */
-    @RequestMapping(value = "applyReferee",method = RequestMethod.POST)
-    public Result<List<RaceRefereeVO>> applyReferee(@RequestBody RaceRefereeParam param){
-        boolean f = raceService.applyReferee(param);
-        List<RaceRefereeVO> refereeVOS = refereeService.getReferees(param.getRaceId());
-        return Result.ok(refereeVOS);
-    }
 
-    @RequestMapping(value = "deleteReferee",method = RequestMethod.DELETE)
-    public Result deleteReferee(@RequestBody DeleteRefereeParam deleteRefereeParam){
-        HashMap<String, Object> colMap = new HashMap<>();
-        colMap.put("race_id",deleteRefereeParam.getRaceId());
-        colMap.put("uid",deleteRefereeParam.getRefereeId());
-        refereeService.removeByMap(colMap);
-        return Result.ok("删除成功");
-    }
 
-    @Deprecated
-    @RequestMapping(value = "changeBattleRecordState",method = RequestMethod.POST)
-    public Result changeBattleRecordState(@RequestBody BattleTrailerParam param){
-        boolean f = raceService.changeBattleRecordState(param);
-        return Result.ok(f);
-    }
-
-    /**
-     * 比赛记分
-     * @param param
-     * @return
-     */
-    @RequestMapping(value = "editBattleScore",method = RequestMethod.POST)
-    public Result editBattleScore(@RequestBody BattleScoreParam param){
-        boolean f = raceService.editBattleScore(param);
-        return Result.ok(f);
-    }
-
-    @RequestMapping(value = "raceHistory",method = RequestMethod.GET)
-    public Result<Page<RaceBattleVO>> raceHistory(@RequestParam("playerId")Long playerId,@RequestParam(value = "pageNo",defaultValue = "1")Integer pageNo,
-                                                  @RequestParam(value = "pageLimit",defaultValue = "10")Integer pageLimit){
-        // 分页
-        Page<RaceBattleVO> raceHistory = battleService.getRaceHistory(playerId,pageNo,pageLimit);
-        return Result.ok(raceHistory);
-    }
 }

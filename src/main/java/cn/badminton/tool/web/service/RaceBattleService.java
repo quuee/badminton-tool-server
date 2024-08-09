@@ -1,6 +1,8 @@
 package cn.badminton.tool.web.service;
 
 import cn.badminton.tool.web.entity.RaceBattleEntity;
+import cn.badminton.tool.web.params.BattleScoreParam;
+import cn.badminton.tool.web.params.BattleTrailerParam;
 import cn.badminton.tool.web.vo.BattleStatisticsVO;
 import cn.badminton.tool.web.vo.RaceBattleVO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -15,4 +17,8 @@ public interface RaceBattleService extends IService<RaceBattleEntity> {
     List<RaceBattleVO> getRaceBattles(Long raceId);
 
     Page<RaceBattleVO> getRaceHistory(Long playerId, Integer pageNo, Integer pageLimit);
+
+    boolean editBattleScore(BattleScoreParam param);
+
+//    boolean changeBattleRecordState(BattleTrailerParam param);
 }
