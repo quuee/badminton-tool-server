@@ -1,6 +1,6 @@
 
 server:
-  port: 8080
+  port: 20100
 
 logging:
   config: classpath:logback-custom.xml
@@ -9,9 +9,9 @@ spring:
   datasource:
     # MySQL8
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.2.32:3306/data_badminton?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&nullCatalogMeansCurrent=true
+    url: jdbc:mysql://127.0.0.1:3306/data_badminton?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&nullCatalogMeansCurrent=true
     username: root
-    password: 123456
+    password: ^password*
 
 mybatis-plus:
   configuration:

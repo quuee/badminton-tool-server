@@ -1,6 +1,6 @@
 
 server:
-  port: 8080
+  port: 20100
 
 logging:
   config: classpath:logback-custom.xml
